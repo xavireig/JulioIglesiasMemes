@@ -1,42 +1,32 @@
 package xavireig.com.julioiglesiasmemes;
 
 import android.app.Activity;
-import android.app.ActionBar;
 import android.app.Fragment;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.MediaStore;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.os.Build;
 import android.view.Window;
 import android.widget.ImageView;
 import android.widget.ShareActionProvider;
+import android.widget.Toast;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
-import com.nostra13.universalimageloader.core.listener.ImageLoadingProgressListener;
-
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.OutputStream;
+import java.util.Random;
 
 
 public class Main extends Activity {
@@ -44,6 +34,8 @@ public class Main extends Activity {
     ShareActionProvider mShareActionProvider;
     ImageView iv;
     Bitmap bitmap;
+    final int TOTAL_IMAGES = 19;
+    private Boolean exit = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,10 +48,32 @@ public class Main extends Activity {
         setContentView(R.layout.activity_main);
     }
 
+    @Override
+    public void onBackPressed() {
+        if (exit)
+            this.finish();
+        else {
+            Toast.makeText(this, "Pulsa de nuevo para salir",
+                    Toast.LENGTH_SHORT).show();
+            exit = true;
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    exit = false;
+                }
+            }, 3 * 1000);
+
+        }
+
+    }
+
     public void onButtonButtonClicked(View view) {
         ImageLoader il = ImageLoader.getInstance();
         iv = (ImageView)findViewById(R.id.imageView);
-        String imageUri = "http://xavy.net63.net/1.jpg";
+        // Select random image
+        Random r = new Random();
+        int pic = r.nextInt(TOTAL_IMAGES) + 1;
+        String imageUri = "http://xavy.net63.net/" + pic + ".jpg";
         il.displayImage(imageUri, iv, null, new ImageLoadingListener() {
             @Override
             public void onLoadingStarted(String imageUri, View view) {
