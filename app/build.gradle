@@ -8,8 +8,8 @@ android {
         applicationId "xavireig.com.julioiglesiasmemes"
         minSdkVersion 14
         targetSdkVersion 20
-        versionCode 1
-        versionName "1.0"
+        versionCode 101
+        versionName "1.0.1"
     }
     buildTypes {
         release {
