@@ -8,6 +8,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.StrictMode;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,8 +26,18 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Random;
 
 
@@ -34,7 +46,7 @@ public class Main extends Activity {
     ShareActionProvider mShareActionProvider;
     ImageView iv;
     Bitmap bitmap;
-    final int TOTAL_IMAGES = 19;
+    int total_images;
     private Boolean exit = false;
 
     @Override
@@ -46,6 +58,9 @@ public class Main extends Activity {
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this).build();
         ImageLoader.getInstance().init(config);
         setContentView(R.layout.activity_main);
+        StrictMode.enableDefaults();
+        total_images = 0;
+        getData();
     }
 
     @Override
@@ -72,7 +87,7 @@ public class Main extends Activity {
         iv = (ImageView)findViewById(R.id.imageView);
         // Select random image
         Random r = new Random();
-        int pic = r.nextInt(TOTAL_IMAGES) + 1;
+        int pic = r.nextInt(total_images) + 1;
         String imageUri = "http://xavy.net63.net/" + pic + ".jpg";
         il.displayImage(imageUri, iv, null, new ImageLoadingListener() {
             @Override
@@ -164,6 +179,49 @@ public class Main extends Activity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void getData() {
+
+        String result = "";
+        InputStream isr = null;
+
+        try{
+            HttpClient httpclient = new DefaultHttpClient();
+            HttpPost httppost = new HttpPost("http://xavy.net63.net/index.php");
+            HttpResponse response = httpclient.execute(httppost);
+            HttpEntity entity = response.getEntity();
+            isr = entity.getContent();
+        }
+        catch(Exception e) {
+            Log.e("log_tag", "Error in http connection " + e.toString());
+        }
+
+        //convert response to string
+
+        try {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(isr,"iso-8859-1"),8);
+            StringBuilder sb = new StringBuilder();
+            String line = null;
+            if ((line = reader.readLine()) != null) {
+                sb.append(line);
+            }
+            isr.close();
+
+            result=sb.toString();
+        }
+        catch(Exception e){
+            Log.e("log_tag", "Error converting result "+e.toString());
+        }
+
+        //parse json data
+        try {
+            total_images = Integer.parseInt(result);
+        }
+        catch(Exception e) {
+            Log.e("log_tag", "Couldn't set text, damnit.");
+        }
+
     }
 
     /**
