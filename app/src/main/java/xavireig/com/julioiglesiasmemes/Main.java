@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.StrictMode;
+import android.text.TextPaint;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -16,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ShareActionProvider;
 import android.widget.Toast;
@@ -119,6 +121,11 @@ public class Main extends Activity {
 
     }
 
+    public void onCreateButtonClicked(View view) {
+        Intent intent = new Intent(this, CreateMeme.class);
+        startActivity(intent);
+        overridePendingTransition(R.anim.animation_splash, R.anim.animation_splash2);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

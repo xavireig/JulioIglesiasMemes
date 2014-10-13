@@ -29,4 +29,14 @@
         android:layout_centerHorizontal="true"
         android:onClick="onButtonButtonClicked"
         android:background="@drawable/bt_julio" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New Button"
+        android:id="@+id/btCreateMeme"
+        android:layout_alignBottom="@+id/button"
+        android:layout_alignRight="@+id/imageView"
+        android:layout_alignEnd="@+id/imageView"
+        android:onClick="onCreateButtonClicked"/>
 </RelativeLayout>

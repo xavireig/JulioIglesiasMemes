@@ -1,0 +1,59 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context=".CreateMeme$PlaceholderFragment">
+
+    <ImageView
+        android:id="@+id/ivMeme"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:scaleType="fitXY"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/txtText2"
+        android:layout_above="@id/adFragmentCreate"
+        android:src="@drawable/julio_bg" />
+
+    <EditText
+        android:id="@+id/txtText1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:textSize="12sp"
+        android:maxLength="40"
+        android:singleLine="true"
+        android:layout_toLeftOf="@+id/btnGenerate"
+        android:layout_toStartOf="@+id/btnGenerate"
+        android:hint="TOP CAPTION" />
+
+    <EditText
+        android:id="@+id/txtText2"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/txtText1"
+        android:layout_alignParentLeft="true"
+        android:layout_toLeftOf="@+id/btnGenerate"
+        android:textSize="12sp"
+        android:maxLength="40"
+        android:singleLine="true"
+        android:hint="BOTTOM CAPTION" />
+
+    <Button
+        android:id="@+id/btnGenerate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Generate"
+        android:textSize="14sp"
+        android:layout_alignParentTop="true"
+        android:layout_alignRight="@+id/ivMeme"
+        android:layout_alignEnd="@+id/ivMeme"
+        android:layout_alignBottom="@+id/txtText2" />
+
+</RelativeLayout>
