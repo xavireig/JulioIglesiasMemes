@@ -35,11 +35,16 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Random;
 
 
@@ -193,45 +198,51 @@ public class Main extends Activity {
         String result = "";
         InputStream isr = null;
 
-        try{
+        try {
+            URL url = new URL("http://xavy.net63.net/index.php");
+            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+            isr = new BufferedInputStream(urlConnection.getInputStream());
+
+            try {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(isr, "iso-8859-1"), 8);
+                StringBuilder sb = new StringBuilder();
+                String line = null;
+                if ((line = reader.readLine()) != null) {
+                    sb.append(line);
+                }
+                isr.close();
+
+                result = sb.toString();
+            } catch (Exception e) {
+                Log.e("log_tag", "Error converting result " + e.toString());
+            }
+
+            urlConnection.disconnect();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        /*try{
             HttpClient httpclient = new DefaultHttpClient();
             HttpPost httppost = new HttpPost("http://xavy.net63.net/index.php");
             HttpResponse response = httpclient.execute(httppost);
             HttpEntity entity = response.getEntity();
             isr = entity.getContent();
-        }
-        catch(Exception e) {
-            Log.e("log_tag", "Error in http connection " + e.toString());
-        }
+
+        }*/
 
         //convert response to string
 
-        try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(isr,"iso-8859-1"),8);
-            StringBuilder sb = new StringBuilder();
-            String line = null;
-            if ((line = reader.readLine()) != null) {
-                sb.append(line);
-            }
-            isr.close();
-
-            result=sb.toString();
-        }
-        catch(Exception e){
-            Log.e("log_tag", "Error converting result "+e.toString());
-        }
 
         //parse json data
         try {
             total_images = Integer.parseInt(result);
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             Log.e("log_tag", "Couldn't set text, damnit.");
         }
-
     }
-
-    /**
+        /**
      * A placeholder fragment containing a simple view.
      */
     public static class PlaceholderFragment extends Fragment {
