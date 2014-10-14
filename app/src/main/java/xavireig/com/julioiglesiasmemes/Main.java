@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.StrictMode;
-import android.text.TextPaint;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -17,7 +16,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ShareActionProvider;
 import android.widget.Toast;
@@ -28,12 +26,6 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -56,9 +48,16 @@ public class Main extends Activity {
     int total_images;
     private Boolean exit = false;
 
+    MyThread mThread;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // starting thread to allow it to be created before posting message
+        mThread = new MyThread();
+        mThread.start();
+
         super.onCreate(savedInstanceState);
+
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setProgressBarIndeterminateVisibility(false);
         // Create global configuration and initialize ImageLoader with this config
@@ -67,7 +66,15 @@ public class Main extends Activity {
         setContentView(R.layout.activity_main);
         StrictMode.enableDefaults();
         total_images = 0;
-        getData();
+
+        // async way to download data
+        mThread.handler.post(new Runnable() {
+
+            @Override
+            public void run() {
+                getData();
+            }
+        });
     }
 
     @Override
@@ -75,7 +82,7 @@ public class Main extends Activity {
         if (exit)
             this.finish();
         else {
-            Toast.makeText(this, "Pulsa de nuevo para salir",
+            Toast.makeText(this, "Again to exit",
                     Toast.LENGTH_SHORT).show();
             exit = true;
             new Handler().postDelayed(new Runnable() {
@@ -163,10 +170,12 @@ public class Main extends Activity {
             // Encode the file as a PNG image.
             FileOutputStream outStream;
             try {
-                outStream = new FileOutputStream(image);
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, outStream);
-                outStream.flush();
-                outStream.close();
+                if (bitmap != null) {
+                    outStream = new FileOutputStream(image);
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, outStream);
+                    outStream.flush();
+                    outStream.close();
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -223,17 +232,6 @@ public class Main extends Activity {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        /*try{
-            HttpClient httpclient = new DefaultHttpClient();
-            HttpPost httppost = new HttpPost("http://xavy.net63.net/index.php");
-            HttpResponse response = httpclient.execute(httppost);
-            HttpEntity entity = response.getEntity();
-            isr = entity.getContent();
-
-        }*/
-
-        //convert response to string
-
 
         //parse json data
         try {

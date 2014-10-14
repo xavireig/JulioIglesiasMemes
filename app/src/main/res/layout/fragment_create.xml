@@ -27,7 +27,8 @@
         android:singleLine="true"
         android:layout_toLeftOf="@+id/btnGenerate"
         android:layout_toStartOf="@+id/btnGenerate"
-        android:hint="TOP CAPTION" />
+        android:hint="TOP CAPTION"
+        android:imeOptions="actionNext" />
 
     <EditText
         android:id="@+id/txtText2"
@@ -39,7 +40,8 @@
         android:textSize="12sp"
         android:maxLength="40"
         android:singleLine="true"
-        android:hint="BOTTOM CAPTION" />
+        android:hint="BOTTOM CAPTION"
+        android:imeOptions="actionDone" />
 
     <Button
         android:id="@+id/btnGenerate"

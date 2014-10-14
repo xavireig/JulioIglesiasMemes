@@ -10,7 +10,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -36,7 +35,6 @@ import com.google.android.gms.ads.AdView;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.util.Random;
 
 public class CreateMeme extends Activity {
     Bitmap originalBitmap, image;
@@ -44,9 +42,11 @@ public class CreateMeme extends Activity {
     EditText txtText1, txtText2;
     ShareActionProvider mShareActionProvider;
     TextPaint paint;
+    int defaultHintColor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_creatememe);
         //image view
@@ -68,48 +68,47 @@ public class CreateMeme extends Activity {
 
         txtText1 =(EditText) findViewById(R.id.txtText1);
         txtText2 =(EditText) findViewById(R.id.txtText2);
+        defaultHintColor = txtText1.getCurrentHintTextColor();
 
         Button btGenerate = (Button) findViewById(R.id.btnGenerate);
         btGenerate.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                // hide keyboard
+                if (txtText1.getText().toString().compareTo("") != 0 && txtText2.getText().toString().compareTo("") != 0) {
+                    // reset colors from error
+                    txtText1.setHintTextColor(defaultHintColor);
+                    txtText2.setHintTextColor(defaultHintColor);
+                    // hide keyboard
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Service.INPUT_METHOD_SERVICE);
+                    EditText myEditText = (EditText) findViewById(R.id.txtText1);
+                    imm.hideSoftInputFromWindow(myEditText.getWindowToken(), 0);
+                    Button bt = (Button) findViewById(R.id.btnGenerate);
+                    bt.requestFocus();
 
-                InputMethodManager imm = (InputMethodManager)getSystemService(Service.INPUT_METHOD_SERVICE);
-                EditText myEditText = (EditText) findViewById(R.id.txtText1);
-                imm.hideSoftInputFromWindow(myEditText.getWindowToken(), 0);
-                Button bt = (Button)findViewById(R.id.btnGenerate);
-                bt.requestFocus();
+                    //loading original bitmap again (undoing all editing)
+                    image = originalBitmap.copy(Bitmap.Config.RGB_565, true);
+                    ivMeme.setImageBitmap(image);
+                    String topText = txtText1.getText().toString().toUpperCase();
+                    String bottomText = txtText2.getText().toString().toUpperCase();
 
-                //loading original bitmap again (undoing all editing)
-                image = originalBitmap.copy(Bitmap.Config.RGB_565, true);
-                ivMeme.setImageBitmap(image);
-                String topText = txtText1.getText().toString().toUpperCase();
-                String bottomText = txtText2.getText().toString().toUpperCase();
+                    //function called to perform drawing
+                    createImage(topText, bottomText);
 
-                //function called to perform drawing
-                createImage(topText, bottomText);
-                // update the shared object
-                setShareIntent();
+                    setShareIntent();
+                }
+                else {
+                    if (txtText1.getText().toString() != "") txtText1.setHintTextColor(Color.RED);
+                    if (txtText2.getText().toString() != "") txtText2.setHintTextColor(Color.RED);
+                    error("Type in some text");
+                }
             }
         });
     }
 
-    /*void saveImage(Bitmap img) {
-        File RootDir = Environment.getExternalStorageDirectory();
-        File file = new File (RootDir, "tmp.png");
-        try {
-            FileOutputStream out = new FileOutputStream(file);
-            img.compress(Bitmap.CompressFormat.PNG, 100, out);
-            out.flush();
-            out.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        Toast.makeText(this, "Image saved to root folder", Toast.LENGTH_LONG).show();
-    }*/
+    private void error(String err) {
+        Toast.makeText(this, err, Toast.LENGTH_SHORT).show();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -127,9 +126,6 @@ public class CreateMeme extends Activity {
             mShareActionProvider = (ShareActionProvider)shareItem.getActionProvider();
         }
 
-        // Create an Intent to share your content
-        setShareIntent();
-
         return true;
     }
 
@@ -143,7 +139,6 @@ public class CreateMeme extends Activity {
             FileOutputStream outStream;
             try {
                 outStream = new FileOutputStream(imageFile);
-                //Bitmap btmp = ((BitmapDrawable)ivMeme.getDrawable()).getBitmap();
                 image.compress(Bitmap.CompressFormat.PNG, 100, outStream);
                 outStream.flush();
                 outStream.close();
@@ -166,8 +161,8 @@ public class CreateMeme extends Activity {
         //canvas object with bitmap image as constructor
         Canvas canvas = new Canvas(image);
         int viewTop = getWindow().findViewById(Window.ID_ANDROID_CONTENT).getTop();
-        x = canvas.getWidth() / 2;
-        y = canvas.getHeight() / 8;
+        x = canvas.getWidth();
+        y = canvas.getHeight();
 
         String fontPath = "impact.ttf";
         Typeface tf = Typeface.createFromAsset(getAssets(), fontPath);
@@ -176,20 +171,21 @@ public class CreateMeme extends Activity {
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeJoin(Paint.Join.ROUND);
         paint.setStrokeMiter(10);
-        paint.setStrokeWidth(15);
+        paint.setStrokeWidth(10);
         paint.setTextSize(150);
         paint.setTextAlign(Paint.Align.CENTER);
         paint.setColor(Color.BLACK);
 
         canvas.save();
         StaticLayout layoutTop = new StaticLayout(""+topText, paint, canvas.getWidth(), Layout.Alignment.ALIGN_NORMAL, 1.0f, 0.0f, false);
-        canvas.translate(x, y);
+        canvas.translate(x / 2, 0);
         layoutTop.draw(canvas);
         canvas.restore();
 
         canvas.save();
         StaticLayout layoutBottom = new StaticLayout(""+bottomText, paint, canvas.getWidth(), Layout.Alignment.ALIGN_NORMAL, 1.0f, 0.0f, false);
-        canvas.translate(x, 6*y);
+        int textHeight = layoutBottom.getHeight();
+        canvas.translate(x / 2, y - textHeight);
         layoutBottom.draw(canvas);
         canvas.restore();
 
@@ -198,13 +194,14 @@ public class CreateMeme extends Activity {
 
         canvas.save();
         StaticLayout layoutTop2 = new StaticLayout(""+topText, paint, canvas.getWidth(), Layout.Alignment.ALIGN_NORMAL, 1.0f, 0.0f, false);
-        canvas.translate(x, y);
+        canvas.translate(x / 2, 0);
         layoutTop2.draw(canvas);
         canvas.restore();
 
         canvas.save();
         StaticLayout layoutBottom2 = new StaticLayout(""+bottomText, paint, canvas.getWidth(), Layout.Alignment.ALIGN_NORMAL, 1.0f, 0.0f, false);
-        canvas.translate(x, 6*y);
+        textHeight = layoutBottom2.getHeight();
+        canvas.translate(x / 2, y - textHeight);
         layoutBottom2.draw(canvas);
         canvas.restore();
 
