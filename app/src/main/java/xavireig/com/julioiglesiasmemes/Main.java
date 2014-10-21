@@ -50,6 +50,7 @@ public class Main extends Activity {
 
     MyThread mThread;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // starting thread to allow it to be created before posting message
