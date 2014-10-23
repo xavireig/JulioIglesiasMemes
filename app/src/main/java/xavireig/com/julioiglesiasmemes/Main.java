@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -67,7 +68,7 @@ public class Main extends Activity {
         setContentView(R.layout.activity_main);
         StrictMode.enableDefaults();
         total_images = 0;
-
+        bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.julio_bg);
         // async way to download data
         mThread.handler.post(new Runnable() {
 
@@ -166,14 +167,14 @@ public class Main extends Activity {
         if (mShareActionProvider != null) {
 
             File sdCardDirectory = Environment.getExternalStorageDirectory();
-            File image = new File(sdCardDirectory,"temp.png");
+            File image = new File(sdCardDirectory,"julio.png");
 
             // Encode the file as a PNG image.
             FileOutputStream outStream;
             try {
                 if (bitmap != null) {
                     outStream = new FileOutputStream(image);
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, outStream);
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 25, outStream);
                     outStream.flush();
                     outStream.close();
                 }

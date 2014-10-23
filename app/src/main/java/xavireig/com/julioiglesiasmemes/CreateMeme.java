@@ -46,64 +46,14 @@ public class CreateMeme extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_creatememe);
         //image view
         ivMeme = (ImageView) findViewById(R.id.ivMeme);
 
-        //to get screen width and hight
-        DisplayMetrics displaymetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
-        //dimentions x,y of device to create a scaled bitmap having similar dimentions to screen size
-        int height1 = displaymetrics.heightPixels;
-        int width1 = displaymetrics.widthPixels;
-
-        //loading bitmap from drawable
-        originalBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.julio_bg);
-        //scaling of bitmap
-        originalBitmap =Bitmap.createScaledBitmap(originalBitmap, width1, height1, false);
-        //creating anoter copy of bitmap to be used for editing
-        image = originalBitmap.copy(Bitmap.Config.RGB_565, true);
-
         txtText1 =(EditText) findViewById(R.id.txtText1);
         txtText2 =(EditText) findViewById(R.id.txtText2);
         defaultHintColor = txtText1.getCurrentHintTextColor();
-
-        Button btGenerate = (Button) findViewById(R.id.btnGenerate);
-        btGenerate.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                if (txtText1.getText().toString().compareTo("") != 0 && txtText2.getText().toString().compareTo("") != 0) {
-                    // reset colors from error
-                    txtText1.setHintTextColor(defaultHintColor);
-                    txtText2.setHintTextColor(defaultHintColor);
-                    // hide keyboard
-                    InputMethodManager imm = (InputMethodManager) getSystemService(Service.INPUT_METHOD_SERVICE);
-                    EditText myEditText = (EditText) findViewById(R.id.txtText1);
-                    imm.hideSoftInputFromWindow(myEditText.getWindowToken(), 0);
-                    Button bt = (Button) findViewById(R.id.btnGenerate);
-                    bt.requestFocus();
-
-                    //loading original bitmap again (undoing all editing)
-                    image = originalBitmap.copy(Bitmap.Config.RGB_565, true);
-                    ivMeme.setImageBitmap(image);
-                    String topText = txtText1.getText().toString().toUpperCase();
-                    String bottomText = txtText2.getText().toString().toUpperCase();
-
-                    //function called to perform drawing
-                    createImage(topText, bottomText);
-
-                    setShareIntent();
-                }
-                else {
-                    if (txtText1.getText().toString() != "") txtText1.setHintTextColor(Color.RED);
-                    if (txtText2.getText().toString() != "") txtText2.setHintTextColor(Color.RED);
-                    error("Type in some text");
-                }
-            }
-        });
     }
 
     private void error(String err) {
@@ -129,17 +79,66 @@ public class CreateMeme extends Activity {
         return true;
     }
 
+    public void onGenerateButtonClick(View v) {
+        if (image == null) {
+            prepareBitmaps();
+        }
+        if (txtText1.getText().toString().compareTo("") != 0 && txtText2.getText().toString().compareTo("") != 0) {
+            // reset colors from error
+            txtText1.setHintTextColor(defaultHintColor);
+            txtText2.setHintTextColor(defaultHintColor);
+            // hide keyboard
+            InputMethodManager imm = (InputMethodManager) getSystemService(Service.INPUT_METHOD_SERVICE);
+            EditText myEditText = (EditText) findViewById(R.id.txtText1);
+            imm.hideSoftInputFromWindow(myEditText.getWindowToken(), 0);
+            Button bt = (Button) findViewById(R.id.btnGenerate);
+            bt.requestFocus();
+
+            //loading original bitmap again (undoing all editing)
+            image = originalBitmap.copy(Bitmap.Config.RGB_565, true);
+            ivMeme.setImageBitmap(image);
+            String topText = txtText1.getText().toString().toUpperCase();
+            String bottomText = txtText2.getText().toString().toUpperCase();
+
+            //function called to perform drawing
+            createImage(topText, bottomText);
+
+            setShareIntent();
+        }
+        else {
+            if (txtText1.getText().toString() != "") txtText1.setHintTextColor(Color.RED);
+            if (txtText2.getText().toString() != "") txtText2.setHintTextColor(Color.RED);
+            error("Type in some text");
+        }
+    }
+
+    private void prepareBitmaps () {
+        // prepare the bitmaps that will be needed to operate
+
+        //dimentions x,y of device to create a scaled bitmap having similar dimentions to screen size
+        int height = ivMeme.getHeight();
+        int width = ivMeme.getWidth();
+
+        //loading bitmap from drawable
+        originalBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.julio_bg);
+        //scaling of bitmap
+        originalBitmap = Bitmap.createScaledBitmap(originalBitmap, width, height, false);
+
+        //creating anoter copy of bitmap to be used for editing
+        image = originalBitmap.copy(Bitmap.Config.RGB_565, true);
+    }
+
     private void setShareIntent() {
         if (mShareActionProvider != null) {
 
             File sdCardDirectory = Environment.getExternalStorageDirectory();
-            File imageFile = new File(sdCardDirectory,"temp.png");
+            File imageFile = new File(sdCardDirectory,"julio.png");
 
             // Encode the file as a PNG image.
             FileOutputStream outStream;
             try {
                 outStream = new FileOutputStream(imageFile);
-                image.compress(Bitmap.CompressFormat.PNG, 100, outStream);
+                image.compress(Bitmap.CompressFormat.PNG, 25, outStream);
                 outStream.flush();
                 outStream.close();
             } catch (Exception e) {
@@ -170,8 +169,8 @@ public class CreateMeme extends Activity {
         paint.setTypeface(tf);
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeJoin(Paint.Join.ROUND);
-        paint.setStrokeMiter(10);
-        paint.setStrokeWidth(10);
+        paint.setStrokeMiter(5);
+        paint.setStrokeWidth(18);
         paint.setTextSize(150);
         paint.setTextAlign(Paint.Align.CENTER);
         paint.setColor(Color.BLACK);
