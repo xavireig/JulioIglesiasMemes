@@ -18,13 +18,13 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:background="@drawable/julio_bg"
-        android:layout_above="@+id/button" />
+        android:layout_above="@+id/btChangeImage" />
 
     <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Julio!"
-        android:id="@+id/button"
+        android:id="@+id/btChangeImage"
         android:onClick="onButtonButtonClicked"
         android:background="@drawable/bt_random_custom"
         android:layout_alignParentBottom="true"
@@ -39,7 +39,7 @@
         android:background="@drawable/bt_pencil_custom"
         android:text="New Button"
         android:id="@+id/btCreateMeme"
-        android:layout_alignBottom="@+id/button"
+        android:layout_alignBottom="@+id/btChangeImage"
         android:layout_alignRight="@+id/imageView"
         android:layout_alignEnd="@+id/imageView"
         android:onClick="onCreateButtonClicked"

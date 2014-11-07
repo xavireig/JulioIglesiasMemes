@@ -16,7 +16,6 @@ import android.os.Environment;
 import android.text.Layout;
 import android.text.StaticLayout;
 import android.text.TextPaint;
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -43,6 +42,7 @@ public class CreateMeme extends Activity {
     ShareActionProvider mShareActionProvider;
     TextPaint paint;
     int defaultHintColor;
+    int idCurrentImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +54,7 @@ public class CreateMeme extends Activity {
         txtText1 =(EditText) findViewById(R.id.txtText1);
         txtText2 =(EditText) findViewById(R.id.txtText2);
         defaultHintColor = txtText1.getCurrentHintTextColor();
+        idCurrentImage = R.drawable.julio_bg3;
     }
 
     private void error(String err) {
@@ -80,9 +81,7 @@ public class CreateMeme extends Activity {
     }
 
     public void onGenerateButtonClick(View v) {
-        if (image == null) {
-            prepareBitmaps();
-        }
+        prepareBitmaps();
         if (txtText1.getText().toString().compareTo("") != 0 && txtText2.getText().toString().compareTo("") != 0) {
             // reset colors from error
             txtText1.setHintTextColor(defaultHintColor);
@@ -112,6 +111,12 @@ public class CreateMeme extends Activity {
         }
     }
 
+    public void onChangeImageButtonClick(View v) {
+        Intent intent = new Intent(this, FullScreenViewActivity.class);
+        startActivityForResult(intent, 1);
+        overridePendingTransition(R.anim.animation_splash, R.anim.animation_splash2);
+    }
+
     private void prepareBitmaps () {
         // prepare the bitmaps that will be needed to operate
 
@@ -120,7 +125,7 @@ public class CreateMeme extends Activity {
         int width = ivMeme.getWidth();
 
         //loading bitmap from drawable
-        originalBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.julio_bg);
+        originalBitmap = BitmapFactory.decodeResource(getResources(), idCurrentImage);
         //scaling of bitmap
         originalBitmap = Bitmap.createScaledBitmap(originalBitmap, width, height, false);
 
@@ -159,7 +164,6 @@ public class CreateMeme extends Activity {
         float x, y = 0.0f;
         //canvas object with bitmap image as constructor
         Canvas canvas = new Canvas(image);
-        int viewTop = getWindow().findViewById(Window.ID_ANDROID_CONTENT).getTop();
         x = canvas.getWidth();
         y = canvas.getHeight();
 
@@ -209,6 +213,21 @@ public class CreateMeme extends Activity {
         return image;
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch(requestCode) {
+            case (1) : {
+                if (resultCode == Activity.RESULT_OK) {
+                    String newText = data.getStringExtra("picture_number");
+                    idCurrentImage = this.getResources().getIdentifier("julio_bg" + newText, "drawable", this.getPackageName());
+                    ivMeme.setImageResource(idCurrentImage);
+                }
+                break;
+            }
+        }
+    }
+
     public static class PlaceholderFragment extends Fragment {
 
         public PlaceholderFragment() {
@@ -238,5 +257,4 @@ public class CreateMeme extends Activity {
             mAdView.loadAd(adRequest);
         }
     }
-
 }

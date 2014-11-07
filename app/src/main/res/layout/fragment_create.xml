@@ -25,7 +25,6 @@
         android:textSize="12sp"
         android:maxLength="40"
         android:singleLine="true"
-        android:layout_toLeftOf="@+id/btnGenerate"
         android:layout_toStartOf="@+id/btnGenerate"
         android:hint="TOP CAPTION"
         android:imeOptions="actionNext" />
@@ -47,12 +46,25 @@
         android:id="@+id/btnGenerate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Generate"
+        android:text="Generate meme"
         android:onClick="onGenerateButtonClick"
         android:textSize="14sp"
-        android:layout_alignParentTop="true"
         android:layout_alignRight="@+id/ivMeme"
         android:layout_alignEnd="@+id/ivMeme"
-        android:layout_alignBottom="@+id/txtText2" />
+        android:layout_above="@+id/txtText2"
+        android:layout_alignParentTop="true" />
+
+    <Button
+        android:id="@+id/btChangeImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Change image"
+        android:onClick="onChangeImageButtonClick"
+        android:textSize="14sp"
+        android:layout_alignBottom="@+id/txtText2"
+        android:layout_toEndOf="@+id/txtText1"
+        android:layout_alignRight="@+id/btnGenerate"
+        android:layout_alignEnd="@+id/btnGenerate"
+        android:layout_below="@+id/txtText1" />
 
 </RelativeLayout>
