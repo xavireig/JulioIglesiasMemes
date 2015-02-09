@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -50,7 +51,6 @@ public class Main extends Activity {
     private Boolean exit = false;
 
     MyThread mThread;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -181,7 +181,6 @@ public class Main extends Activity {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
             Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
             sharingIntent.setType("image/png");
             sharingIntent.putExtra(android.content.Intent.EXTRA_STREAM, Uri.fromFile(image));
@@ -242,6 +241,26 @@ public class Main extends Activity {
             Log.e("log_tag", "Couldn't set text, damnit.");
         }
     }
+
+    private class BackgroundOperation extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected void onPostExecute(String result) {
+
+        }
+
+        @Override
+        protected String doInBackground(String... strings) {
+            return null;
+        }
+
+        @Override
+        protected void onPreExecute() {}
+
+        @Override
+        protected void onProgressUpdate(Void... values) {}
+    }
+
         /**
      * A placeholder fragment containing a simple view.
      */
@@ -269,8 +288,8 @@ public class Main extends Activity {
         @Override
         public void onActivityCreated(Bundle bundle) {
             super.onActivityCreated(bundle);
-            AdView mAdView = (AdView) getView().findViewById(R.id.adView);
-            AdRequest adRequest = new AdRequest.Builder().build();
+            final AdView mAdView = (AdView) getView().findViewById(R.id.adView);
+            final AdRequest adRequest = new AdRequest.Builder().build();
             mAdView.loadAd(adRequest);
         }
     }
